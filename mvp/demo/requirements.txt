@@ -1,0 +1,4 @@
+# Demo-only dependencies. The membrane core has no third-party SVG
+# requirements — diagrams are generated from raw stdlib string templates.
+# `rich` powers the dark-themed terminal trace.
+rich>=13.0
