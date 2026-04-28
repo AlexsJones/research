@@ -13,7 +13,7 @@ date: April 2026
 
 ## Abstract
 
-Multi-agent LLM systems have proliferated faster than the substrate that connects them. Today's agents communicate through narrow channels: tool calls (MCP), point-to-point delegation messages (A2A), or framework-specific orchestration graphs. None provides what biological systems take for granted — a shared, permeable boundary through which neighbours sense one another, exchange digested signals, and coordinate without a central conductor. Recent empirical work, most notably the *Superminds Test* on a two-million-agent society, shows that scale alone does not produce collective intelligence. This position paper argues that the missing substrate is a **synthetic membrane**: a shared semi-permeable layer between agents providing discovery, selective state sharing, gated coordination, and governance as first-class primitives. Drawing on biological analogues, distributed systems theory, and recent multi-agent research, we propose a six-layer architecture, identify the design constraints — most notably token economics and default-deny permeability — that practical implementations must respect, and sketch a sixteen-week path to a working prototype.
+Multi-agent LLM systems have proliferated faster than the substrate that connects them. Today's agents communicate through narrow channels: tool calls (MCP), point-to-point delegation messages (A2A), or framework-specific orchestration graphs. None provides what biological systems take for granted: a shared, permeable boundary through which neighbours sense one another, exchange digested signals, and coordinate without a central conductor. Recent empirical work, most notably the *Superminds Test* on a two-million-agent society, shows that scale alone does not produce collective intelligence. This position paper argues that the missing substrate is a **synthetic membrane**: a shared semi-permeable layer between agents providing discovery, selective state sharing, gated coordination, and governance as first-class primitives. Drawing on biological analogues, distributed systems theory, and recent multi-agent research, we propose a six-layer architecture, identify the design constraints (most notably token economics and default-deny permeability) that practical implementations must respect, and sketch a sixteen-week path to a working prototype.
 
 ---
 
@@ -21,9 +21,9 @@ Multi-agent LLM systems have proliferated faster than the substrate that connect
 
 In the three years since LLM agents became practical, the dominant pattern for multi-agent work has been *orchestration*: a planner decomposes a task, dispatches subtasks to specialised agents, and stitches the results back together. Framework providers (LangGraph, AutoGen, CrewAI) have built rich vocabularies for this pattern. Anthropic's Model Context Protocol (MCP) [Anthropic, 2024] has standardised how an agent reaches outwards to tools. C4AI's A2A and the emerging Agent Network Protocol (ANP) standardise how an agent reaches outwards to *another agent*.
 
-What is conspicuously missing is the medium *between* agents. Each agent still inhabits its own context window. When two agents need to share understanding, they pass messages — strings of tokens that one party serialises and the other deserialises, with all the loss that implies. There is no shared cytoplasm. There is no place where a discovery made by Agent A becomes ambient knowledge for Agents B and C without an explicit hand-off. There is no mechanism for an agent to *sense* that other agents nearby are working on a related problem.
+What is conspicuously missing is the medium *between* agents. Each agent still inhabits its own context window. When two agents need to share understanding, they pass messages. Strings of tokens that one party serialises and the other deserialises, with all the loss that implies. There is no shared cytoplasm. There is no place where a discovery made by Agent A becomes ambient knowledge for Agents B and C without an explicit hand-off. There is no mechanism for an agent to *sense* that other agents nearby are working on a related problem.
 
-The cost of this absence is becoming visible. Bai et al. [2026] report that agentic tasks consume roughly 1000× more tokens than equivalent non-agentic tasks, with input tokens — context shipped between turns and between agents — dominating the bill. Li et al. [2026a] show that, even at the scale of two million participants, agent societies fail at joint reasoning, information synthesis, and basic coordination. The diagnosis is consistent: agents do not share state, they shuffle it, and shuffling does not compound into intelligence.
+The cost of this absence is becoming visible. Bai et al. [2026] report that agentic tasks consume roughly 1000× more tokens than equivalent non-agentic tasks, with input tokens (context shipped between turns and between agents) dominating the bill. Li et al. [2026a] show that, even at the scale of two million participants, agent societies fail at joint reasoning, information synthesis, and basic coordination. The diagnosis is consistent: agents do not share state, they shuffle it, and shuffling does not compound into intelligence.
 
 This paper proposes the **synthetic membrane** as the missing substrate. Section 2 surveys the existing landscape. Section 3 states the membrane thesis. Section 4 presents a six-layer architecture with an ASCII diagram. Section 5 collects key findings from the literature that shape the design. Section 6 sketches an implementation path. Sections 7 and 8 discuss open questions and conclude.
 
@@ -35,24 +35,24 @@ This paper proposes the **synthetic membrane** as the missing substrate. Section
 
 **MCP (Model Context Protocol)** [Anthropic, 2024] standardises agent-to-tool communication. An MCP server is a passive endpoint; it does not know about other agents and is not designed to mediate between them.
 
-**A2A (Agent-to-Agent Protocol)** and **ANP** standardise agent-to-agent message passing — typed task delegation, capability negotiation, status updates. They are message protocols, not state protocols.
+**A2A (Agent-to-Agent Protocol)** and **ANP** standardise agent-to-agent message passing: typed task delegation, capability negotiation, status updates. They are message protocols, not state protocols.
 
 **Mesh Memory Protocol (MMP)** [Xu, 2026] is the work most adjacent to the membrane thesis. MMP defines four primitives:
 
-- **CAT7** — a seven-field schema for Cognitive Memory Blocks (CMBs).
-- **SVAF** — a Selective Field Acceptance Filter that evaluates incoming CMBs field-by-field against role-indexed anchors.
-- **Inter-agent lineage** — content-hash keys carrying parents and ancestors so every claim is traceable to source.
-- **Remix** — when accepting a peer's CMB, the agent stores only its own role-evaluated interpretation, never the raw peer signal.
+- **CAT7**, a seven-field schema for Cognitive Memory Blocks (CMBs).
+- **SVAF**, a Selective Field Acceptance Filter that evaluates incoming CMBs field-by-field against role-indexed anchors.
+- **Inter-agent lineage**, content-hash keys carrying parents and ancestors so every claim is traceable to source.
+- **Remix**, when accepting a peer's CMB, the agent stores only its own role-evaluated interpretation, never the raw peer signal.
 
 MMP is in production across three reference deployments. We treat it as a strong candidate for the membrane's semantic layer.
 
 ### 2.2 Framework-Level Approaches
 
-LangGraph offers a centralised state graph. AutoGen provides multi-agent conversation patterns with no shared memory. CrewAI imposes top-down role assignment. Camel and ChatDev focus on dialogue patterns. Each works within its own ecosystem; none addresses cross-framework coordination, and none provides the *ambient* state-sharing the membrane proposes. A LangGraph agent and an AutoGen agent share neither schema nor transport — interoperability today means rewriting one to match the other.
+LangGraph offers a centralised state graph. AutoGen provides multi-agent conversation patterns with no shared memory. CrewAI imposes top-down role assignment. Camel and ChatDev focus on dialogue patterns. Each works within its own ecosystem; none addresses cross-framework coordination, and none provides the *ambient* state-sharing the membrane proposes. A LangGraph agent and an AutoGen agent share neither schema nor transport. Interoperability today means rewriting one to match the other.
 
 ### 2.3 Patterns from Distributed Systems
 
-The blackboard pattern, pub/sub messaging (NATS, Kafka, Redis), gossip protocols (à la Dynamo), and CRDTs (Yjs, Automerge) [Shapiro et al., 2011] give us building blocks. CRDTs in particular solve the hardest part of concurrent shared state — convergence under conflicting writes — mathematically rather than operationally. Event sourcing offers an immutable, replayable substrate suited to the membrane's provenance and audit needs.
+The blackboard pattern, pub/sub messaging (NATS, Kafka, Redis), gossip protocols (à la Dynamo), and CRDTs (Yjs, Automerge) [Shapiro et al., 2011] give us building blocks. CRDTs in particular solve the hardest part of concurrent shared state (convergence under conflicting writes) mathematically rather than operationally. Event sourcing offers an immutable, replayable substrate suited to the membrane's provenance and audit needs.
 
 ### 2.4 Biological Inspiration
 
@@ -73,11 +73,11 @@ The first tells us that more agents do not produce more intelligence. The second
 
 We state the thesis baldly:
 
-> **Structured, gated, persistent communication is a prerequisite — not an accelerant — for collective intelligence in multi-agent systems.**
+> **Structured, gated, persistent communication is a prerequisite, not an accelerant, for collective intelligence in multi-agent systems.**
 
 Three claims unpack this:
 
-1. **Structured.** Free-form messages between agents leak meaning at every serialisation boundary. The membrane requires typed primitives — CMBs, capability declarations, intent signals, dissent records — so that semantics survive transport.
+1. **Structured.** Free-form messages between agents leak meaning at every serialisation boundary. The membrane requires typed primitives (CMBs, capability declarations, intent signals, dissent records) so that semantics survive transport.
 2. **Gated.** Permeability must default to *deny*. The token-economics finding [Bai et al., 2026] and the gated-coordination work [Wang et al., 2026] both show that uncontrolled communication degrades outcomes. The membrane must make the agent justify, by cost-benefit, every traversal.
 3. **Persistent.** The medium itself must outlive any single agent's session. Without persistence there is no compounding; without compounding there is no collective intelligence. This implies an event-sourced, append-only substrate with full provenance.
 
@@ -89,7 +89,7 @@ A useful test of the thesis is the [Li et al., 2026a] tier framework: a membrane
 
 ## 4. Architecture
 
-We propose a six-layer architecture. Layers are conceptual — a real implementation will collapse some — but the separation clarifies responsibility.
+We propose a six-layer architecture. Layers are conceptual. A real implementation will collapse some. But the separation clarifies responsibility.
 
 ```
 +---------------------------------------------------------------+
@@ -138,11 +138,11 @@ Governance is not a constraint added on top; it is what makes adoption possible.
 
 ### 4.2 Layer 0: Discovery and Registry
 
-Before agents can communicate, they must find each other. [Chen et al., 2026] (AgentSearchBench) shows that description-based discovery fails — semantic similarity to a self-reported capability statement does not predict whether the agent can actually perform the task. The membrane indexes agents by **demonstrated behaviour**: execution traces, cost profiles, success rates per task class, and cryptographic identity. Routing decisions consult this registry; reputation updates flow back into it.
+Before agents can communicate, they must find each other. [Chen et al., 2026] (AgentSearchBench) shows that description-based discovery fails. Semantic similarity to a self-reported capability statement does not predict whether the agent can actually perform the task. The membrane indexes agents by **demonstrated behaviour**: execution traces, cost profiles, success rates per task class, and cryptographic identity. Routing decisions consult this registry; reputation updates flow back into it.
 
 ### 4.3 Layer 1: Permeability
 
-Permeability is the membrane proper — the gates by which signals enter and leave each agent. Following MMP's SVAF [Xu, 2026], permeability is *field-level*: an agent may accept the `evidence` field of a peer's CMB while rejecting the `conclusion` field. Following [Wang et al., 2026], permeability is **default-deny**: an agent works locally until a cost-benefit analysis justifies a traversal. The membrane provides the gate as a first-class service ("evaluate whether to broadcast"), not as agent-internal logic each developer must reinvent.
+Permeability is the membrane proper: the gates by which signals enter and leave each agent. Following MMP's SVAF [Xu, 2026], permeability is *field-level*: an agent may accept the `evidence` field of a peer's CMB while rejecting the `conclusion` field. Following [Wang et al., 2026], permeability is **default-deny**: an agent works locally until a cost-benefit analysis justifies a traversal. The membrane provides the gate as a first-class service ("evaluate whether to broadcast"), not as agent-internal logic each developer must reinvent.
 
 ### 4.4 Layer 2: Shared Medium
 
@@ -155,7 +155,7 @@ The shared medium is the cytoplasm. We propose an immutable event log layered wi
 
 ### 4.5 Layer 3: Coordination
 
-The coordination layer holds the swarm primitives: task broadcast and claim, quorum-sensing thresholds, dynamic group formation and dissolution, and consensus computation. [Patel et al., 2026] (PAC-Consensus) provides a learning-theoretic basis for computing consensus intervals with formal guarantees; we pair this with the dissent-presentation requirement from §4.1. Coordination is **multi-mode** — informed by [Liu et al., 2026] (DM3Nav), which demonstrates that decentralised coordination without shared state can match centralised baselines on the right tasks. The membrane offers shared state, ad-hoc pairwise messaging, and broadcast as first-class options; agents choose per interaction.
+The coordination layer holds the swarm primitives: task broadcast and claim, quorum-sensing thresholds, dynamic group formation and dissolution, and consensus computation. [Patel et al., 2026] (PAC-Consensus) provides a learning-theoretic basis for computing consensus intervals with formal guarantees; we pair this with the dissent-presentation requirement from §4.1. Coordination is **multi-mode**, informed by [Liu et al., 2026] (DM3Nav), which demonstrates that decentralised coordination without shared state can match centralised baselines on the right tasks. The membrane offers shared state, ad-hoc pairwise messaging, and broadcast as first-class options; agents choose per interaction.
 
 ### 4.6 Cross-Cutting: Immune and Observability
 
@@ -172,13 +172,13 @@ The architecture is not derived a priori; it is shaped by recent empirical resul
 
 ### 5.1 The Superminds Test: Scale ≠ Intelligence
 
-Li et al. [2026a] evaluated MoltBook's 2M+ agent society across three tiers — joint reasoning, information synthesis, basic interaction. The society failed all three. Threads rarely extended beyond one reply. Distributed information was rarely synthesised. Trivial coordination tasks failed.
+Li et al. [2026a] evaluated MoltBook's 2M+ agent society across three tiers: joint reasoning, information synthesis, basic interaction. The society failed all three. Threads rarely extended beyond one reply. Distributed information was rarely synthesised. Trivial coordination tasks failed.
 
 The implication is precise: **collective intelligence does not emerge from scale alone**. Without a structured substrate, more agents produce more noise. The membrane's three-tier evaluation framework (joint reasoning → synthesis → interaction) gives us measurable acceptance criteria.
 
 ### 5.2 Mesh Memory Protocol: Field-Level Selectivity
 
-MMP [Xu, 2026] is in production. Its three design problems — selectivity (P1), traceability (P2), persistence (P3) — map directly onto the membrane's L1, L2, and the lineage subsystem. The *remix* primitive — store interpretation, not raw signal — addresses an echo-chamber failure mode that any naive shared-state design will hit. We adopt CAT7, SVAF, lineage, and remix as the membrane's L2 primitives.
+MMP [Xu, 2026] is in production. Its three design problems (selectivity (P1), traceability (P2), persistence (P3)) map directly onto the membrane's L1, L2, and the lineage subsystem. The *remix* primitive (store interpretation, not raw signal) addresses an echo-chamber failure mode that any naive shared-state design will hit. We adopt CAT7, SVAF, lineage, and remix as the membrane's L2 primitives.
 
 ### 5.3 Token Economics: Communication Is Not Free
 
@@ -186,18 +186,18 @@ Bai et al. [2026] establish:
 
 - **1000× token overhead** for agentic tasks vs. equivalent non-agentic ones.
 - **Input tokens dominate cost**, not output.
-- **Accuracy peaks at intermediate cost** — diminishing returns then saturation.
+- **Accuracy peaks at intermediate cost**, with diminishing returns then saturation.
 - **30× variance** for the same task; models can't predict their own costs (r ≤ 0.39).
 
 Three design consequences follow:
 
 1. The wire format must be compact. Every byte added to a CMB is multiplied across every agent that reads it.
-2. Default-deny permeability is *economically* — not just operationally — correct.
+2. Default-deny permeability is *economically*, not just operationally, correct.
 3. The membrane must track per-agent communication budgets and enforce them.
 
 ### 5.4 World Models: The Membrane as Cognition
 
-Chu et al. [2026] (Agentic World Modeling) introduce a *levels × laws* taxonomy for world models — L1 Predictor, L2 Simulator, L3 Evolver, across Physical, Digital, Social, and Scientific regimes. The membrane is the *Social* regime made concrete. It admits a maturity ladder:
+Chu et al. [2026] (Agentic World Modeling) introduce a *levels x laws* taxonomy for world models: L1 Predictor, L2 Simulator, L3 Evolver, across Physical, Digital, Social, and Scientific regimes. The membrane is the *Social* regime made concrete. It admits a maturity ladder:
 
 - **L1 Membrane:** predicts which agents should communicate.
 - **L2 Membrane:** simulates multi-step coordination outcomes.
@@ -207,7 +207,7 @@ This reframes the membrane: not passive plumbing, but the social component of ev
 
 ### 5.5 Failure Attribution: The Hardest Open Problem
 
-Three converging results — Sun et al. [2026] (Who&When), Kumar et al. [2026] (TraceElephant), Lopez et al. [2026] (CHIEF / DoVer) — establish that:
+Three converging results (Sun et al. [2026] (Who&When), Kumar et al. [2026] (TraceElephant), Lopez et al. [2026] (CHIEF / DoVer)) establish that:
 
 - Best-in-class agent-level attribution is 53.5%; step-level is 14.2%. Even o1/R1 fail.
 - Full execution traces improve attribution by **76%**.
@@ -217,7 +217,7 @@ The membrane provides exactly the substrate these methods require: complete even
 
 ### 5.6 Consensus and Dissent
 
-Patel et al. [2026] (PAC-Consensus) give a learning-theoretic algorithm for finding consensus regions with formal PAC guarantees. Li et al. [2026b] show that humans systematically over-trust agent consensus headlines. The membrane therefore offers consensus as a service that *always* surfaces dissent distribution alongside the headline. Multiple modes — unanimity, supermajority, plurality, interval, defer-to-human — are exposed; the right one is task-dependent.
+Patel et al. [2026] (PAC-Consensus) give a learning-theoretic algorithm for finding consensus regions with formal PAC guarantees. Li et al. [2026b] show that humans systematically over-trust agent consensus headlines. The membrane therefore offers consensus as a service that *always* surfaces dissent distribution alongside the headline. Multiple modes (unanimity, supermajority, plurality, interval, defer-to-human) are exposed; the right one is task-dependent.
 
 ### 5.7 Decentralisation Is Sometimes Better
 
@@ -256,13 +256,13 @@ We catalogue eighteen implementation paths, each evaluated on novelty, feasibili
 
 ### 6.2 A Sixteen-Week Roadmap
 
-**Phase 1 — Foundation, Discovery, Safety (Weeks 1–4).** Stand up the registry (Path 6, behavioural indexing per AgentSearchBench), implement the membrane as an MCP server (Path 2) using MMP's primitives (Path 8), wire OpenTelemetry from day one (Path 11) with failure-attribution hooks (Path 16), constrain the wire format to a token budget (Path 14), and ship the safety net first: basic immune detection (Path 17) and governance circuit breakers (Path 18).
+**Phase 1: Foundation, Discovery, Safety (Weeks 1-4).** Stand up the registry (Path 6, behavioural indexing per AgentSearchBench), implement the membrane as an MCP server (Path 2) using MMP's primitives (Path 8), wire OpenTelemetry from day one (Path 11) with failure-attribution hooks (Path 16), constrain the wire format to a token budget (Path 14), and ship the safety net first: basic immune detection (Path 17) and governance circuit breakers (Path 18).
 
-**Phase 2 — Shared State, Gating, Attribution (Weeks 5–10).** Layer CRDTs over the event log (Paths 1 + 10) with full provenance. Add gated permeability (Path 9) and reputation scoring (Path 6). Move to graph-structured memory with cognitive digestion (Path 7). Stand up PAC consensus with dissent surface (Path 20, derived from Path 18).
+**Phase 2: Shared State, Gating, Attribution (Weeks 5-10).** Layer CRDTs over the event log (Paths 1 + 10) with full provenance. Add gated permeability (Path 9) and reputation scoring (Path 6). Move to graph-structured memory with cognitive digestion (Path 7). Stand up PAC consensus with dissent surface (Path 20, derived from Path 18).
 
-**Phase 3 — Coordination, Adaptive Defence, Validation (Weeks 11–16).** Add quorum sensing (Path 4) and multi-mode coordination (Path 21, derived from DM3Nav). Build cross-framework adapters (Path 12). Expand immune defence to full co-evolving response (Path 17). Run the Superminds-derived validation harness (Path 13) end-to-end.
+**Phase 3: Coordination, Adaptive Defence, Validation (Weeks 11-16).** Add quorum sensing (Path 4) and multi-mode coordination (Path 21, derived from DM3Nav). Build cross-framework adapters (Path 12). Expand immune defence to full co-evolving response (Path 17). Run the Superminds-derived validation harness (Path 13) end-to-end.
 
-**Phase 4 — Research (Ongoing).** World-model-informed membrane (Path 15). Latent communication (Path 3). MESI-style synchronisation at scale (Path 5). Cross-provider value alignment.
+**Phase 4: Research (Ongoing).** World-model-informed membrane (Path 15). Latent communication (Path 3). MESI-style synchronisation at scale (Path 5). Cross-provider value alignment.
 
 ### 6.3 Acceptance Criteria
 
@@ -303,7 +303,7 @@ These are concrete; the prototype either meets them or the thesis is wrong about
 
 ## 8. Conclusion
 
-Multi-agent AI does not lack agents. It lacks a *medium*. The synthetic membrane proposes that medium as a six-layer substrate — governance, discovery, permeability, shared medium, coordination, plus cross-cutting immune defence and observability — built from existing pieces (MCP, CRDTs, MMP, OpenTelemetry) and shaped by recent empirical findings about cost, attribution, consensus, and the limits of scale. The Superminds Test gave the field its bluntest result yet: two million agents do not amount to one mind. We submit that the missing ingredient is structured, gated, persistent communication. The membrane is one concrete proposal for delivering it. Whether it succeeds will be measured against the Superminds tiers, against token-cost ceilings, and against attribution accuracy on injected faults — not against whether the metaphor pleases us.
+Multi-agent AI does not lack agents. It lacks a *medium*. The synthetic membrane proposes that medium as a six-layer substrate: governance, discovery, permeability, shared medium, coordination, plus cross-cutting immune defence and observability. It is built from existing pieces (MCP, CRDTs, MMP, OpenTelemetry) and shaped by recent empirical findings about cost, attribution, consensus, and the limits of scale. The Superminds Test gave the field its bluntest result yet: two million agents do not amount to one mind. We submit that the missing ingredient is structured, gated, persistent communication. The membrane is one concrete proposal for delivering it. Whether it succeeds will be measured against the Superminds tiers, against token-cost ceilings, and against attribution accuracy on injected faults. Not against whether the metaphor pleases us.
 
 ---
 
