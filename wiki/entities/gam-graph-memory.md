@@ -1,0 +1,13 @@
+# GAM: Hierarchical Graph-based Agentic Memory for LLM Agents
+
+## Summary
+- Explicitly decouples memory encoding from consolidation
+- Event progression graph for ongoing dialogue, topic network for stable knowledge
+- Minimizes interference while preserving consistency
+- Graph-guided multi-factor retrieval enhances precision
+
+## Relevance to Membrane
+Supports Layer 2 shared medium design. Decouples memory encoding from consolidation. Uses event progression graph plus topic associative network.
+
+## Citations
+- arXiv: https://arxiv.org/abs/2604.12285

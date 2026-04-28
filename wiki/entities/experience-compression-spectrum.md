@@ -1,0 +1,13 @@
+# Experience Compression Spectrum: Unifying Memory, Skills, and Rules in LLM Agents
+
+## Summary
+- Memory, skills, and rules as points on a compression spectrum
+- Every system operates at fixed compression level -- none supports adaptive cross-level
+- Specialization alone insufficient -- communities solve shared problems without exchanging solutions
+- Transferability increases with compression at cost of specificity
+
+## Relevance to Membrane
+Validates our token economics argument. Proposes compression spectrum: episodic memory (5-20x), procedural skills (50-500x), declarative rules (1000x+). Identifies the missing diagonal -- no system supports adaptive cross-level compression.
+
+## Citations
+- arXiv: https://arxiv.org/abs/2604.15877

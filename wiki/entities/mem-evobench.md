@@ -1,0 +1,12 @@
+# MemEvoBench: Benchmarking Memory MisEvolution in LLM Agents
+
+## Summary
+- 26 attack taxonomies across 7 domains and 36 risk types
+- Substantial safety degradation under biased memory updates
+- Static prompt-based defenses insufficient -- need dynamic defense mechanisms
+
+## Relevance to Membrane
+Critical for Immune Layer. First benchmark for long-horizon memory safety. Shows contaminated/biased memory triggers abnormal behaviors, and static prompt-based defenses are insufficient.
+
+## Citations
+- arXiv: https://arxiv.org/abs/2604.15774

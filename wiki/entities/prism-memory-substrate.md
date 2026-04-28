@@ -1,0 +1,14 @@
+# Prism: An Evolutionary Memory Substrate for Multi-Agent Open-Ended Discovery
+
+## Summary
+- Entropy-gated stratification assigns memories based on Shannon information content
+- Causal memory graph with interventional edges and agent-attributed provenance
+- Value-of-Information retrieval policy with self-evolving strategy selection
+- 4-agent Prism achieves 2.8x higher improvement rate than single-agent baselines
+- 88.1 LLM-as-a-Judge score on LOCOMO (31.2% over Mem0)
+
+## Relevance to Membrane
+Extremely relevant -- essentially a parallel proposal for what we call Layer 2. Unifies layered persistence, vector semantic memory, graph relational memory, and evolutionary search. Its causal memory graph with provenance is very close to our event log design.
+
+## Citations
+- arXiv: https://arxiv.org/abs/2604.19795
