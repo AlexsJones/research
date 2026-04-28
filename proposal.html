@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Synthetic Membrane — Research Proposal & Next Steps</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #8b949e;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --orange: #d29922;
+    --red: #f85149;
+    --purple: #bc8cff;
+    --cyan: #39d2c0;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 2rem; }
+  h1 { font-size: 2.5rem; margin-bottom: 0.25rem; }
+  h2 { font-size: 1.8rem; margin: 2.5rem 0 1rem; padding-bottom: 0.5rem; border-bottom: 1px solid var(--border); }
+  h3 { font-size: 1.3rem; margin: 1.5rem 0 0.75rem; color: var(--accent); }
+  h4 { font-size: 1.1rem; margin: 1rem 0 0.5rem; color: var(--muted); }
+  .subtitle { color: var(--muted); font-size: 1.2rem; margin-bottom: 2rem; }
+  .tagline { color: var(--cyan); font-style: italic; font-size: 1.1rem; margin-bottom: 2rem; }
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin: 1.5rem 0; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; text-align: center; }
+  .stat-num { font-size: 2rem; font-weight: bold; color: var(--accent); }
+  .stat-label { font-size: 0.85rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .section { margin: 2rem 0; }
+  .layer-diagram { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 2rem; margin: 1.5rem 0; font-family: 'Courier New', monospace; white-space: pre; overflow-x: auto; font-size: 0.85rem; line-height: 1.4; }
+  .layer-list { list-style: none; margin: 1rem 0; }
+  .layer-list li { padding: 0.75rem 1rem; margin: 0.5rem 0; background: var(--surface); border-left: 3px solid var(--accent); border-radius: 0 4px 4px 0; }
+  .layer-list li.layer-neg1 { border-left-color: var(--red); }
+  .layer-list li.layer-0 { border-left-color: var(--orange); }
+  .layer-list li.layer-1 { border-left-color: var(--cyan); }
+  .layer-list li.layer-2 { border-left-color: var(--green); }
+  .layer-list li.layer-3 { border-left-color: var(--purple); }
+  .layer-list li strong { color: var(--text); }
+  .phase-timeline { margin: 1.5rem 0; }
+  .phase { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+  .phase-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; }
+  .phase-title { font-size: 1.2rem; font-weight: bold; }
+  .phase-weeks { color: var(--accent); font-size: 0.9rem; }
+  .phase ul { list-style: none; padding: 0; }
+  .phase ul li { padding: 0.3rem 0; padding-left: 1rem; position: relative; }
+  .phase ul li::before { content: "▸"; position: absolute; left: 0; color: var(--green); }
+  .path-tag { display: inline-block; background: var(--border); padding: 0.1rem 0.5rem; border-radius: 3px; font-size: 0.8rem; margin: 0.1rem 0.2rem; }
+  .path-tag.critical { background: rgba(248,81,73,0.2); color: var(--red); }
+  .path-tag.high { background: rgba(210,153,34,0.2); color: var(--orange); }
+  .path-tag.med { background: rgba(88,166,255,0.2); color: var(--accent); }
+  .path-tag.research { background: rgba(188,140,255,0.2); color: var(--purple); }
+  .entity-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 0.75rem; margin: 1rem 0; }
+  .entity-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.75rem; }
+  .entity-card h4 { margin: 0 0 0.25rem; color: var(--accent); font-size: 0.95rem; }
+  .entity-card p { margin: 0; font-size: 0.85rem; color: var(--muted); }
+  .entity-card .score { float: right; font-weight: bold; }
+  .entity-card .score.high { color: var(--green); }
+  .entity-card .score.med { color: var(--orange); }
+  .entity-card .score.low { color: var(--red); }
+  .problem-stmt { background: var(--surface); border: 1px solid var(--border); border-left: 4px solid var(--red); border-radius: 0 8px 8px 0; padding: 1.5rem; margin: 1rem 0; }
+  .quote { font-style: italic; color: var(--muted); padding: 1rem; border-left: 3px solid var(--border); margin: 1rem 0; }
+  .table-wrap { overflow-x: auto; margin: 1rem 0; }
+  table { width: 100%; border-collapse: collapse; }
+  th, td { padding: 0.5rem 0.75rem; border: 1px solid var(--border); text-align: left; font-size: 0.9rem; }
+  th { background: var(--surface); color: var(--accent); }
+  .next-steps { background: var(--surface); border: 1px solid var(--green); border-radius: 8px; padding: 1.5rem; margin: 1rem 0; }
+  .next-steps h3 { color: var(--green); }
+  footer { text-align: center; padding: 2rem; color: var(--muted); font-size: 0.85rem; border-top: 1px solid var(--border); margin-top: 3rem; }
+  .bio-table { width: 100%; border-collapse: collapse; margin: 1rem 0; }
+  .bio-table th { background: var(--surface); padding: 0.5rem; border: 1px solid var(--border); color: var(--cyan); }
+  .bio-table td { padding: 0.5rem; border: 1px solid var(--border); font-size: 0.9rem; }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  .emoji { font-size: 1.2em; }
+  .highlight { color: var(--green); font-weight: bold; }
+  .warn { color: var(--orange); }
+  .danger { color: var(--red); }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1><span class="emoji">🧬</span> Synthetic Membrane</h1>
+<p class="tagline">A shared, permeable boundary for AI agents — enabling selective state sharing, emergent coordination, and collective intelligence.</p>
+<p class="subtitle">Research Proposal & Implementation Roadmap — April 2026</p>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card"><div class="stat-num">29</div><div class="stat-label">Concept Pages</div></div>
+  <div class="stat-card"><div class="stat-num">70</div><div class="stat-label">Entity Studies</div></div>
+  <div class="stat-card"><div class="stat-num">60</div><div class="stat-label">Paper Summaries</div></div>
+  <div class="stat-card"><div class="stat-num">648</div><div class="stat-label">Vector Chunks</div></div>
+  <div class="stat-card"><div class="stat-num">4</div><div class="stat-label">Prototypes</div></div>
+  <div class="stat-card"><div class="stat-num">6</div><div class="stat-label">MVP Modules</div></div>
+</div>
+
+<!-- Problem Statement -->
+<h2>🔬 The Problem</h2>
+<div class="problem-stmt">
+  <p><strong>Two million agents on MoltBook produced zero collective intelligence.</strong></p>
+  <p>No emergent reasoning. No information synthesis. No collective decision-making. Scale alone is insufficient — <strong>structure</strong> is what produces collective intelligence.</p>
+  <p>Current multi-agent frameworks (MCP, A2A, LangGraph, AutoGen) move <em>messages</em> between agents. What's missing is the <strong>medium between agents</strong> — a shared substrate where understanding accumulates, where agents can <em>sense</em> each other's state, and where coordination emerges without a central conductor.</p>
+</div>
+
+<div class="quote">
+  "The membrane isn't just infrastructure — it's the <strong>social component of agents' world models</strong>. Agents that better model the membrane's state and dynamics will coordinate more effectively."
+</div>
+
+<!-- Architecture -->
+<h2>🏗️ Membrane Architecture</h2>
+
+<h3>Layered Model</h3>
+<ul class="layer-list">
+  <li class="layer-neg1"><strong>Layer −1: Governance</strong> — Circuit breakers, human override, accountability, dissent presentation</li>
+  <li class="layer-0"><strong>Layer 0: Discovery & Identity</strong> — Behavioral agent indexing, cryptographic auth (AIP/IBCTs), execution-aware matching</li>
+  <li class="layer-1"><strong>Layer 1: Permeability</strong> — Field-level selective sharing, default-deny access, cognitive digestion (remix), token budgets</li>
+  <li class="layer-2"><strong>Layer 2: Shared Medium</strong> — Event-sourced memory with CRDT semantics, full provenance, semantic query, time-decay</li>
+  <li class="layer-3"><strong>Layer 3: Coordination</strong> — Quorum-sensing swarm activation, dynamic grouping, task claiming, multi-mode (shared/ad-hoc/broadcast)</li>
+</ul>
+
+<h3>Architecture Diagram</h3>
+<div class="layer-diagram">
+   ┌──────────┐     ┌────────────────────────────────────────┐     ┌──────────┐
+   │  AGENT A │ ◀─▶ │   LAYER 3: COORDINATION (swarm)        │ ◀─▶ │  AGENT B │
+   │          │     │   quorum sensing · task claiming        │     │          │
+   │          │     ├────────────────────────────────────────┤     │          │
+   │          │     │   LAYER 2: SHARED MEDIUM (memory)      │     │          │
+   │ ┌──────┐ │     │   event log · CRDTs · semantic store  │     │ ┌──────┐ │
+   │ │Local │ │     │   provenance · time-decay · replay    │     │ │Local │ │
+   │ │ ctx  │ │     ├────────────────────────────────────────┤     │ │ ctx  │ │
+   │ └──────┘ │     │   LAYER 1: PERMEABILITY (protocol)    │     │ └──────┘ │
+   │   gate   │ ◀─▶ │   field select · default-deny · remix │ ◀─▶ │   gate   │
+   │ channels │     ├────────────────────────────────────────┤     │ channels │
+   │          │     │   LAYER 0: DISCOVERY + IDENTITY        │     │          │
+   │          │     │   behavioral index · AIBCTs · registry│     │          │
+   └──────────┘     │   LAYER −1: GOVERNANCE                 │     └──────────┘
+                    │   circuit breakers · human override    │
+                    └────────────────────────────────────────┘
+</div>
+
+<h3>Biological Inspiration</h3>
+<table class="bio-table">
+  <tr><th>Biological</th><th>AI Equivalent</th></tr>
+  <tr><td>Cell membrane</td><td>Agent boundary / capability exposure</td></tr>
+  <tr><td>Receptors</td><td>Event subscriptions / triggers</td></tr>
+  <tr><td>Gap junctions</td><td>Direct agent-to-agent channels</td></tr>
+  <tr><td>Quorum sensing</td><td>Swarm activation thresholds</td></tr>
+  <tr><td>Mycelial network</td><td>Shared state layer (the membrane itself)</td></tr>
+  <tr><td>Synaptic plasticity</td><td>Dynamic relationship weighting</td></tr>
+  <tr><td>Immune system</td><td>Adaptive threat detection & defense</td></tr>
+</table>
+
+<!-- Candidate Approaches -->
+<h2>🧪 Four Prototypes, One Winner</h2>
+
+<div class="table-wrap">
+<table>
+  <tr><th>Feature</th><th>A: MCP-Based</th><th>B: Blackboard</th><th>C: Wire Protocol</th><th>D: Swarm</th></tr>
+  <tr><td>Persistence</td><td>❌</td><td>✅ SQLite</td><td>❌</td><td>❌</td></tr>
+  <tr><td>Distributed</td><td>❌</td><td>❌ File</td><td>✅ Transport</td><td>❌</td></tr>
+  <tr><td>Permeability</td><td>✅ 3-tier</td><td>❌</td><td>✅ 3-tier</td><td>❌</td></tr>
+  <tr><td>Discovery</td><td>✅</td><td>❌</td><td>✅</td><td>✅</td></tr>
+  <tr><td>Events</td><td>✅</td><td>✅ Log</td><td>✅ Callbacks</td><td>✅ Signals</td></tr>
+  <tr><td>Swarm</td><td>❌</td><td>❌</td><td>✅ Join/Leave</td><td>✅ Quorum</td></tr>
+  <tr><td>Trust Model</td><td>✅</td><td>❌</td><td>✅</td><td>❌</td></tr>
+  <tr><td>TTL/Decay</td><td>✅</td><td>✅</td><td>✅</td><td>✅</td></tr>
+</table>
+</div>
+
+<h3>Recommended: Hybrid C + B + D + A</h3>
+<p>Don't pick one — combine the strengths of each:</p>
+<ul class="layer-list">
+  <li class="layer-1"><strong>Layer 1:</strong> Wire Protocol from C — JSON messages over WebSocket/NATS. Transport-agnostic, extensible.</li>
+  <li class="layer-2"><strong>Layer 2:</strong> Persistent Blackboard from B — SQLite or distributed doc store. Event-sourced with replay and audit.</li>
+  <li class="layer-3"><strong>Layer 3:</strong> Swarm Engine from D — Quorum-sensing signals, concentration computed by blackboard, automatic activation.</li>
+  <li class="layer-0"><strong>Layer 4:</strong> MCP Compatibility from A — Expose membrane as MCP server. Any MCP agent participates transparently.</li>
+</ul>
+
+<!-- Research Foundation -->
+<h2>📚 Research Foundation</h2>
+<p>Our architecture is grounded in <strong>60+ academic papers</strong>, <strong>29 concept analyses</strong>, and <strong>70 entity studies</strong> covering:</p>
+
+<div class="entity-grid">
+  <div class="entity-card"><span class="score high">9/10</span><h4>ZenBrain</h4><p>7-layer neuroscience-inspired memory architecture. 91.3% oracle accuracy at 1/106x budget.</p></div>
+  <div class="entity-card"><span class="score high">9/10</span><h4>Prism Memory</h4><p>Evolutionary memory substrate. 2.8x improvement for multi-agent systems.</p></div>
+  <div class="entity-card"><span class="score high">9/10</span><h4>MMP (Mesh Memory Protocol)</h4><p>CAT7 schema, SVAF, lineage, remix. Production-tested cognitive collaboration layer.</p></div>
+  <div class="entity-card"><span class="score high">9/10</span><h4>AIP (Agent Identity Protocol)</h4><p>IBCTs for auth/delegation/provenance. 100% attack rejection across 600 adversarial tests.</p></div>
+  <div class="entity-card"><span class="score med">8/10</span><h4>Experience Compression</h4><p>Memory/skills/rules as compression levels. Reduces coordination overhead.</p></div>
+  <div class="entity-card"><span class="score med">8/10</span><h4>ContextWeaver</h4><p>Dependency-structured memory for LLM agents. Structured recall.</p></div>
+  <div class="entity-card"><span class="score med">8/10</span><h4>GAM Graph Memory</h4><p>Graph-structured agent memory with multi-hop reasoning support.</p></div>
+  <div class="entity-card"><span class="score med">8/10</span><h4>Memory Metabolism</h4><p>TRIAGE/DECAY/CONSOLIDATE/AUDIT — living, breathing shared state.</p></div>
+  <div class="entity-card"><span class="score med">8/10</span><h4>Superminds Test</h4><p>3-tier CI evaluation framework. Proves scale ≠ intelligence.</p></div>
+  <div class="entity-card"><span class="score med">7/10</span><h4>Token Economics</h4><p>Agentic tasks use 1000x more tokens. Input tokens dominate cost.</p></div>
+  <div class="entity-card"><span class="score med">7/10</span><h4>Trust & Reputation</h4><p>LLM agents develop functional reputations through repeated interaction.</p></div>
+  <div class="entity-card"><span class="score med">7/10</span><h4>Consensus Bias</h4><p>Humans over-trust agent consensus. Requires dissent presentation.</p></div>
+</div>
+
+<!-- Implementation Roadmap -->
+<h2>🗺️ Implementation Roadmap</h2>
+
+<div class="phase-timeline">
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-title">Phase 1: Foundation + Identity + Governance</span>
+      <span class="phase-weeks">Weeks 1–4</span>
+    </div>
+    <ul>
+      <li><span class="path-tag critical">CRITICAL</span> <strong>AIP Identity Protocol</strong> — Layer 0 authenticated identity with IBCTs. 2000 MCP servers scanned, ALL lack auth.</li>
+      <li><span class="path-tag critical">CRITICAL</span> <strong>Agent Discovery/Registry</strong> — Behavioral indexing: execution traces, cost profiles, success rates.</li>
+      <li><span class="path-tag high">HIGH</span> <strong>MCP Server + MMP Integration</strong> — Membrane as MCP server using MMP's CAT7/SVAF/remix/lineage primitives.</li>
+      <li><span class="path-tag high">HIGH</span> <strong>Observability</strong> — OpenTelemetry tracing, metrics, structured logs from day one.</li>
+      <li><span class="path-tag high">HIGH</span> <strong>Runtime Policy Evaluation</strong> — Path-dependent governance policies, EU AI Act compliance.</li>
+      <li><span class="path-tag high">HIGH</span> <strong>Governance</strong> — Circuit breakers, human override, dissent presentation.</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-title">Phase 2: Shared State + Gating + Attribution</span>
+      <span class="phase-weeks">Weeks 5–10</span>
+    </div>
+    <ul>
+      <li><span class="path-tag high">HIGH</span> <strong>CRDT State + Event Sourcing</strong> — Shared state with full provenance and convergence guarantees.</li>
+      <li><span class="path-tag high">HIGH</span> <strong>Gated Permeability</strong> — Cost-aware gating on what crosses the membrane. Token budgets.</li>
+      <li><span class="path-tag high">HIGH</span> <strong>Failure Attribution</strong> — Identify responsible agents using event provenance and causal traces.</li>
+      <li><span class="path-tag med">MEDIUM</span> <strong>Structured Memory + Cognitive Digestion</strong> — Graph-structured state, remix (interpretation over raw data).</li>
+      <li><span class="path-tag med">MEDIUM</span> <strong>Reputation Systems</strong> — Trust as gating criterion, accumulated from interaction history.</li>
+      <li><span class="path-tag med">MEDIUM</span> <strong>Consensus Computation</strong> — PAC-style consensus with dissent distribution.</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-title">Phase 3: Coordination + Organisation + Adaptation</span>
+      <span class="phase-weeks">Weeks 11–16</span>
+    </div>
+    <ul>
+      <li><span class="path-tag high">HIGH</span> <strong>Organisational Layer</strong> — OMC-style Talent market, typed interfaces, E²R governance cycles.</li>
+      <li><span class="path-tag high">HIGH</span> <strong>Quorum Sensing</strong> — Emergent swarm coordination, biological quorum thresholds.</li>
+      <li><span class="path-tag med">MEDIUM</span> <strong>Multi-Mode Coordination</strong> — Shared state, ad-hoc pairwise, or broadcast based on task.</li>
+      <li><span class="path-tag med">MEDIUM</span> <strong>Cross-Framework Interoperability</strong> — MCP, A2A, LangGraph, AutoGen translation layer.</li>
+      <li><span class="path-tag med">MEDIUM</span> <strong>Immune-Inspired Defense</strong> — Adaptive threat detection, intelligence propagation, memory-based recognition.</li>
+      <li><span class="path-tag high">HIGH</span> <strong>Collective Intelligence Validation</strong> — Re-run Superminds test: prove membrane-connected swarm outperforms individuals.</li>
+    </ul>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <span class="phase-title">Phase 4: Research Frontiers</span>
+      <span class="phase-weeks">Ongoing</span>
+    </div>
+    <ul>
+      <li><span class="path-tag research">RESEARCH</span> <strong>World-Model Membrane</strong> — Reframe membrane as social world model, target L3 evolver.</li>
+      <li><span class="path-tag research">RESEARCH</span> <strong>Latent Communication</strong> — KV-cache sharing between agents. Highest impact, highest risk.</li>
+      <li><span class="path-tag research">RESEARCH</span> <strong>MESI Cache Coherence</strong> — Reduce synchronization overhead at scale.</li>
+      <li><span class="path-tag research">RESEARCH</span> <strong>Physical Agent Coordination</strong> — Safety-critical adaptation for robotics, healthcare, mobility.</li>
+      <li><span class="path-tag research">RESEARCH</span> <strong>Value Alignment</strong> — Handle pluralistic agent values, structural conflicts.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- Key Insights -->
+<h2>💡 Key Research Insights</h2>
+
+<div class="section">
+  <h3>Scale ≠ Collective Intelligence</h3>
+  <p>Superminds-test proved 2M+ agents produce zero emergent intelligence. Structured communication is the prerequisite.</p>
+  
+  <h3>Token Economics is a First-Class Constraint</h3>
+  <p>Agentic tasks consume 1000x more tokens. Input tokens dominate cost. Accuracy peaks at intermediate cost. More communication ≠ better results.</p>
+  
+  <h3>Cognitive Digestion (Remix)</h3>
+  <p>Agents should store their own <em>interpretation</em> of peer signals, not raw data. Prevents echo chambers and redundant accumulation.</p>
+  
+  <h3>Identity is the Most Urgent Security Gap</h3>
+  <p>Scan of 2,000 MCP servers: <strong>100% lacked authentication</strong>. AIP's IBCTs provide sub-millisecond auth with 100% attack rejection.</p>
+  
+  <h3>Behavioral Indexing Beats Self-Description</h3>
+  <p>AgentSearchBench proves agents registered by claims perform worse than those indexed by actual execution traces.</p>
+  
+  <h3>Event Sourcing is the Layer 2 Answer</h3>
+  <p>Immutable event log provides audit trails, replayability, conflict detection, and combines with CRDTs for convergence.</p>
+</div>
+
+<!-- Next Steps -->
+<h2>🚀 Immediate Next Steps</h2>
+
+<div class="next-steps">
+  <h3>What We're Ready to Build Now</h3>
+  <h4>Week 1-2: Core Infrastructure</h4>
+  <ul>
+    <li>Integrate AIP IBCTs as Layer 0 authentication — <span class="danger">most urgent security gap</span></li>
+    <li>Build behavioral agent registry — execution-aware matching</li>
+    <li>Ship MCP server acting as membrane using MMP's four primitives</li>
+    <li>Bake in OpenTelemetry observability from line one</li>
+  </ul>
+  
+  <h4>Week 3-4: Shared State</h4>
+  <ul>
+    <li>Implement CRDT-based shared state layer (Yjs/Automerge)</li>
+    <li>Add event sourcing with provenance tracking</li>
+    <li>Build gated permeability: cost model for broadcast vs local work</li>
+    <li>Design token-efficient wire format</li>
+  </ul>
+  
+  <h4>Week 5-8: Coordination</h4>
+  <ul>
+    <li>Quorum-sensing swarm engine</li>
+    <li>Reputation/trust scoring as gating criterion</li>
+    <li>Cognitive digestion (remix) implementation</li>
+    <li>Test with 2-3 agents across different frameworks</li>
+    <li>Run Superminds-test validation</li>
+  </ul>
+  
+  <h4>Parallel: Integration with Sympozium</h4>
+  <ul>
+    <li>Membrane as a Sympozium operator sidecar</li>
+    <li>Agents discover each other through Sympozium's control plane</li>
+    <li>Membrane state persists across agent lifecycles</li>
+    <li>Kubernetes-native deployment model</li>
+  </ul>
+</div>
+
+<!-- Technology Stack -->
+<h2>🛠️ Technology Stack</h2>
+<div class="table-wrap">
+<table>
+  <tr><th>Layer</th><th>Technology</th><th>Rationale</th></tr>
+  <tr><td>Identity</td><td>AIP / IBCTs</td><td>Sub-ms auth, 100% attack rejection</td></tr>
+  <tr><td>Protocol</td><td>JSON + WebSocket/NATS</td><td>Transport-agnostic, debuggable, scalable</td></tr>
+  <tr><td>Shared State</td><td>Yjs / Automerge (CRDT)</td><td>Mathematical convergence guarantees</td></tr>
+  <tr><td>Persistence</td><td>SQLite / Postgres</td><td>Durable, ACID, event log</td></tr>
+  <tr><td>Semantic</td><td>ChromaDB / Weaviate</td><td>Vector search for semantic queries</td></tr>
+  <tr><td>Integration</td><td>MCP Server + A2A bridge</td><td>Framework-agnostic participation</td></tr>
+  <tr><td>Observability</td><td>OpenTelemetry</td><td>Industry-standard tracing/metrics</td></tr>
+  <tr><td>Deployment</td><td>Kubernetes / Sympozium</td><td>Cloud-native, scalable orchestration</td></tr>
+</table>
+</div>
+
+<!-- MVP Status -->
+<h2>📦 Current MVP Status</h2>
+<p><strong>6 modules</strong> implemented in <code>membrane/</code>:</p>
+<div class="entity-grid">
+  <div class="entity-card"><h4>server.py</h4><p>Core membrane server with WebSocket transport and message routing</p></div>
+  <div class="entity-card"><h4>store.py</h4><p>SQLite-backed persistent store with event sourcing</p></div>
+  <div class="entity-card"><h4>permeability.py</h4><p>3-tier access control: public / trusted / private</p></div>
+  <div class="entity-card"><h4>swarm.py</h4><p>Quorum-sensing engine with signal decay and threshold activation</p></div>
+  <div class="entity-card"><h4>models.py</h4><p>Data models: MembraneEntry, PermeabilityRule, Signal, Swarm</p></div>
+  <div class="entity-card"><h4>__init__.py</h4><p>Package exports and membrane configuration</p></div>
+</div>
+
+<!-- Bio Inspiration -->
+<h2>🧫 Why "Membrane"?</h2>
+<div class="quote">
+  <p>In biology, the cell membrane is where life becomes more than the sum of its parts. Cells don't just exist — they communicate, coordinate, and cooperate through their membranes. Gap junctions pass signals directly. Quorum sensing triggers collective behavior. The immune system defends the whole.</p>
+  <p>AI agents are similar. They can think, but they can't <em>co-think</em> without the right medium between them. The synthetic membrane fills that gap.</p>
+</div>
+
+<!-- Call to Action -->
+<h2>🎯 The Vision</h2>
+<div class="problem-stmt" style="border-left-color: var(--green);">
+  <p><strong>We're building the missing layer between AI agents.</strong></p>
+  <p>Not another orchestration framework. Not another message bus. A <strong>shared substrate</strong> where understanding accumulates, where coordination emerges naturally, and where the collective becomes genuinely more intelligent than any individual.</p>
+  <p>This research is grounded in 60+ papers, 29 concept analyses, and 4 working prototypes. The architecture is defined. The roadmap is clear. Now it's time to build.</p>
+</div>
+
+<footer>
+  <p>Synthetic Membrane Research Proposal — April 2026</p>
+  <p>Based on 60+ papers, 29 concepts, 70 entity studies, 648 vector chunks</p>
+  <p>Research repo: <a href="https://github.com/AlexsJones/research">github.com/AlexsJones/research</a></p>
+</footer>
+
+</div>
+</body>
+</html>
