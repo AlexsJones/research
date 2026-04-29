@@ -223,6 +223,30 @@ Patel et al. [2026] (PAC-Consensus) give a learning-theoretic algorithm for find
 
 Liu et al. [2026] (DM3Nav) demonstrate that, for spatial coordination tasks, agents using only local observations and ad-hoc pairwise messaging match or beat centralised baselines. The membrane therefore is **not** mandated for every interaction. It is a toolkit that exposes shared state, pairwise messaging, and broadcast as equally first-class options. Forcing all coordination through shared state would replicate the orchestration mistake at a different layer.
 
+### 5.8 Neuroscience-Inspired Memory Architectures
+
+ZenBrain [Zhang et al., 2026d] demonstrates a 7-layer memory architecture inspired by biological memory systems, achieving 91.3% oracle accuracy at 1/106th the computational budget. This provides concrete evidence that structured memory architectures dramatically outperform flat context windows. For the membrane, ZenBrain validates Layer 2: a neuroscience-inspired memory substrate gives agents the ability to consolidate, decay, and retrieve shared knowledge efficiently.
+
+Prism Memory [Kim et al., 2026] uses an evolutionary memory substrate that achieves 2.8× improvement for multi-agent systems over baseline approaches. This provides a concrete implementation candidate for the membrane's Layer 2.
+
+### 5.9 Memory Lifecycle Operations
+
+Memory Metabolism [Patel et al., 2026b] introduces TRIAGE/DECAY/CONSOLIDATE/AUDIT as the four lifecycle operations for living shared state. This maps directly onto the membrane's Layer 2: the shared medium is not static storage but a metabolically active substrate where entries are triaged on ingestion, decay over time, consolidate into durable knowledge, and periodically audited for relevance. Memory metabolism transforms the membrane from passive plumbing to an active participant in knowledge management.
+
+The Experience Compression Spectrum [Chen et al., 2026b] shows that memory, skills, and rules form a hierarchy of compression levels. This validates the cognitive digestion (remix) primitive: agents should store compressed interpretations rather than raw data, with the compression level chosen based on the information's expected utility. This directly shapes Layer 1 permeability design — the wire format should encode information at the appropriate compression level.
+
+### 5.10 Memory Security and Trust
+
+MemEvoBench [Wang et al., 2026b] benchmarks memory safety across 36 distinct risk types for LLM agent memory systems, revealing that memory contamination is a systematic threat vector. GAMMAF [Liu et al., 2026b] provides graph-based anomaly detection for multi-agent systems, giving the membrane's immune layer concrete detection algorithms.
+
+Spore Attack [Zhang et al., 2026e] introduces a new attack vector where poisoned memory entries propagate through shared state like biological spores, self-replicating across agents via lineage chains. This attack specifically targets shared memory systems like the membrane and demonstrates why the immune layer must include quarantine mechanisms, not just anomaly detection.
+
+The Trust/Lies/Long Memories study [Li et al., 2026c] empirically demonstrates that LLM agents develop functional reputations through repeated interaction. This validates the membrane's Layer 0 reputation systems as empirically grounded, not just theoretically motivated.
+
+### 5.11 Latent Communication Advances
+
+OBF (Optimal Bandwidth Filtering) [Zhang et al., 2026f] demonstrates 89% communication cost reduction via latent relay compression. This makes latent communication (Path 3) substantially less speculative: if agents can compress and relay latent representations rather than text, the membrane's wire format achieves dramatically lower token overhead while preserving reasoning fidelity.
+
 ---
 
 ## 6. Implementation
@@ -258,7 +282,7 @@ We catalogue eighteen implementation paths, each evaluated on novelty, feasibili
 
 **Phase 1: Foundation, Discovery, Safety (Weeks 1-4).** Stand up the registry (Path 6, behavioural indexing per AgentSearchBench), implement the membrane as an MCP server (Path 2) using MMP's primitives (Path 8), wire OpenTelemetry from day one (Path 11) with failure-attribution hooks (Path 16), constrain the wire format to a token budget (Path 14), and ship the safety net first: basic immune detection (Path 17) and governance circuit breakers (Path 18).
 
-**Phase 2: Shared State, Gating, Attribution (Weeks 5-10).** Layer CRDTs over the event log (Paths 1 + 10) with full provenance. Add gated permeability (Path 9) and reputation scoring (Path 6). Move to graph-structured memory with cognitive digestion (Path 7). Stand up PAC consensus with dissent surface (Path 20, derived from Path 18).
+**Phase 2: Shared State, Gating, Attribution (Weeks 5-10).** Layer CRDTs over the event log (Paths 1 + 10) with full provenance. Consider ZenBrain's 7-layer architecture, Prism's evolutionary substrate, and ContextWeaver's dependency-structured memory as concrete Layer 2 candidates. Add gated permeability (Path 9) and reputation scoring (Path 6). Move to graph-structured memory with cognitive digestion (Path 7). Stand up PAC consensus with dissent surface (Path 20, derived from Path 18).
 
 **Phase 3: Coordination, Adaptive Defence, Validation (Weeks 11-16).** Add quorum sensing (Path 4) and multi-mode coordination (Path 21, derived from DM3Nav). Build cross-framework adapters (Path 12). Expand immune defence to full co-evolving response (Path 17). Run the Superminds-derived validation harness (Path 13) end-to-end.
 
@@ -298,6 +322,7 @@ These are concrete; the prototype either meets them or the thesis is wrong about
 - **Token cost regression.** A naive membrane that sends raw CMBs to every subscriber would *worsen* the problem [Bai et al., 2026] identifies. Default-deny and cognitive digestion are not nice-to-haves; they are load-bearing.
 - **Governance theatre.** A dissent surface that humans never read is no better than no dissent surface. The L−1 design must be evaluated against actual human decision-making, not assumed-effective.
 - **Adversarial co-evolution.** The membrane is a high-value target. Any defence we ship will be probed; we must plan for compromise rather than for prevention.
+- **Memory contamination and spore attacks.** [Zhang et al., 2026e] demonstrates that poisoned entries in shared state can self-replicate across agents via lineage chains, spreading like biological spores. MemEvoBench [Wang et al., 2026b] catalogues 36 memory safety risk types. The membrane must include quarantine mechanisms for contaminated entries, entry-level provenance validation, and memory-level immune responses beyond behavioural anomaly detection.
 
 ---
 
@@ -422,6 +447,69 @@ Multi-agent AI does not lack agents. It lacks a *medium*. The synthetic membrane
   title   = {Adversarial Co-Evolution in Multi-Agent {LLM} Systems},
   author  = {Zhang, K. and others},
   journal = {arXiv preprint},
+  year    = {2026}
+}
+
+@article{zhang2026zenbrain,
+  title   = {ZenBrain: A Neuroscience-Inspired 7-Layer Memory Architecture for Autonomous {AI} Systems},
+  author  = {Zhang, M. and others},
+  journal = {arXiv preprint arXiv:2604.23878},
+  year    = {2026}
+}
+
+@article{kim2026prism,
+  title   = {Prism: Evolutionary Memory Substrate for Multi-Agent Systems},
+  author  = {Kim, J. and others},
+  journal = {arXiv preprint arXiv:2604.19795},
+  year    = {2026}
+}
+
+@article{patel2026metabolism,
+  title   = {Memory as Metabolism: TRIAGE, DECAY, CONSOLIDATE, AUDIT for Living Shared State},
+  author  = {Patel, S. and others},
+  journal = {arXiv preprint arXiv:2604.12034},
+  year    = {2026}
+}
+
+@article{chen2026compression,
+  title   = {The Experience Compression Spectrum: Memory, Skills, and Rules as Compression Levels},
+  author  = {Chen, X. and others},
+  journal = {arXiv preprint arXiv:2604.15877},
+  year    = {2026}
+}
+
+@article{wang2026memevobench,
+  title   = {MemEvoBench: Memory Safety Benchmark for {LLM} Agent Systems},
+  author  = {Wang, Y. and others},
+  journal = {arXiv preprint arXiv:2604.15774},
+  year    = {2026}
+}
+
+@article{liu2026gammaf,
+  title   = {GAMMAF: Graph-Based Anomaly Detection for {LLM} Multi-Agent Systems},
+  author  = {Liu, J. and others},
+  journal = {arXiv preprint arXiv:2604.24477},
+  year    = {2026}
+}
+
+@article{zhang2026spore,
+  title   = {Spore Attack: Memory Poisoning in Shared-State Multi-Agent Systems},
+  author  = {Zhang, K. and others},
+  journal = {arXiv preprint arXiv:2604.23711},
+  year    = {2026}
+}
+
+@article{li2026trust,
+  title   = {Trust, Lies, and Long Memories: Functional Reputation in {LLM} Agent Societies},
+  author  = {Li, X. and others},
+  journal = {arXiv preprint arXiv:2604.20582},
+  year    = {2026}
+}
+
+@article{zhang2026obf,
+  title   = {OBF: Optimal Bandwidth Filtering for Latent Relay Compression},
+  author  = {Zhang, R. and others},
+  journal = {arXiv preprint arXiv:2604.13349},
   year    = {2026}
 }
 ```
