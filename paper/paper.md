@@ -225,27 +225,41 @@ Liu et al. [2026] (DM3Nav) demonstrate that, for spatial coordination tasks, age
 
 ### 5.8 Neuroscience-Inspired Memory Architectures
 
-ZenBrain [Zhang et al., 2026d] demonstrates a 7-layer memory architecture inspired by biological memory systems, achieving 91.3% oracle accuracy at 1/106th the computational budget. This provides concrete evidence that structured memory architectures dramatically outperform flat context windows. For the membrane, ZenBrain validates Layer 2: a neuroscience-inspired memory substrate gives agents the ability to consolidate, decay, and retrieve shared knowledge efficiently.
+ZenBrain [Zhang et al., 2026d] built a 7-layer memory architecture modelled on biological memory systems and got 91.3% oracle accuracy at 1/106th the computational budget. That is a number worth staring at. It means structured memory is not just cleaner architecture — it is dramatically cheaper, and the savings are enormous.
 
-Prism Memory [Kim et al., 2026] uses an evolutionary memory substrate that achieves 2.8× improvement for multi-agent systems over baseline approaches. This provides a concrete implementation candidate for the membrane's Layer 2.
+Prism [Kim et al., 2026] takes a different angle: an evolutionary memory substrate that achieves 2.8× improvement for multi-agent systems. Both papers point at the same conclusion for the membrane's Layer 2: the shared medium should not be a flat key-value store. It should be a structured, multi-tiered memory system that mirrors how biological organisms organise knowledge.
+
+The implication is practical. We have concrete candidates for what Layer 2 looks like underneath the CRDT/event-sourcing layer. ZenBrain for the cognitive architecture, Prism for the evolutionary adaptation, ContextWeaver [Xu et al., 2026] for dependency-structured recall. The design space is narrowing.
 
 ### 5.9 Memory Lifecycle Operations
 
-Memory Metabolism [Patel et al., 2026b] introduces TRIAGE/DECAY/CONSOLIDATE/AUDIT as the four lifecycle operations for living shared state. This maps directly onto the membrane's Layer 2: the shared medium is not static storage but a metabolically active substrate where entries are triaged on ingestion, decay over time, consolidate into durable knowledge, and periodically audited for relevance. Memory metabolism transforms the membrane from passive plumbing to an active participant in knowledge management.
+Memory Metabolism [Patel et al., 2026b] makes a simple but important point: shared state is not a thing you store and forget. It is a thing that lives and dies. The paper proposes four lifecycle operations — TRIAGE, DECAY, CONSOLIDATE, AUDIT — that transform the membrane from passive plumbing to an active participant in knowledge management.
 
-The Experience Compression Spectrum [Chen et al., 2026b] shows that memory, skills, and rules form a hierarchy of compression levels. This validates the cognitive digestion (remix) primitive: agents should store compressed interpretations rather than raw data, with the compression level chosen based on the information's expected utility. This directly shapes Layer 1 permeability design — the wire format should encode information at the appropriate compression level.
+Entries are triaged on ingestion (what matters, what doesn't). They decay over time (old signals lose relevance). They consolidate (transient observations crystallise into durable knowledge). And they are periodically audited (what has become stale or wrong).
+
+The Experience Compression Spectrum [Chen et al., 2026b] extends this: memory, skills, and rules are not different things, they are different compression levels. Raw observation is the uncompressed form. Skill is the compressed, reusable form. Rule is the lossy-but-fast form. This maps directly onto cognitive digestion — the remix primitive from MMP. Agents store their *interpretation* of a signal, not the signal itself, and the compression level they choose depends on how many times they expect to reuse it.
+
+Together these two papers give Layer 2 a metabolic lifecycle and Layer 1 a principled reason for compact wire formats. They are not separate design concerns.
 
 ### 5.10 Memory Security and Trust
 
-MemEvoBench [Wang et al., 2026b] benchmarks memory safety across 36 distinct risk types for LLM agent memory systems, revealing that memory contamination is a systematic threat vector. GAMMAF [Liu et al., 2026b] provides graph-based anomaly detection for multi-agent systems, giving the membrane's immune layer concrete detection algorithms.
+The moment shared state becomes valuable, somebody tries to poison it. Three papers hit this from different angles.
 
-Spore Attack [Zhang et al., 2026e] introduces a new attack vector where poisoned memory entries propagate through shared state like biological spores, self-replicating across agents via lineage chains. This attack specifically targets shared memory systems like the membrane and demonstrates why the immune layer must include quarantine mechanisms, not just anomaly detection.
+MemEvoBench [Wang et al., 2026b] catalogues 36 memory safety risk types for LLM agent systems — prompt injection into memory, context poisoning, memory exfiltration, and more. It is not a short list.
 
-The Trust/Lies/Long Memories study [Li et al., 2026c] empirically demonstrates that LLM agents develop functional reputations through repeated interaction. This validates the membrane's Layer 0 reputation systems as empirically grounded, not just theoretically motivated.
+GAMMAF [Liu et al., 2026b] gives the membrane's immune layer something concrete to detect with: graph-based anomaly detection over agent interaction patterns. Not just behavioural anomalies at the edge, but structural anomalies in the network of trust.
+
+Spore Attack [Zhang et al., 2026e] is the one that made me stop scrolling. It demonstrates that poisoned entries in shared state can propagate across agents like biological spores — self-replicating through lineage chains. The attack is literally named after a biological mechanism. The irony is not lost. The membrane's immune layer needs quarantine, not just detection. A contaminated entry should be isolated before it spreads.
+
+On the trust side, the Trust/Lies/Long Memories study [Li et al., 2026c] empirically confirms something the membrane assumed: LLM agents develop functional reputations through repeated interaction. Agents learn who is reliable and who is not. The membrane's Layer 0 reputation system is not a theoretical add-on — it is something that happens naturally and should be measured, not invented.
 
 ### 5.11 Latent Communication Advances
 
-OBF (Optimal Bandwidth Filtering) [Zhang et al., 2026f] demonstrates 89% communication cost reduction via latent relay compression. This makes latent communication (Path 3) substantially less speculative: if agents can compress and relay latent representations rather than text, the membrane's wire format achieves dramatically lower token overhead while preserving reasoning fidelity.
+Path 3 in our roadmap — latent communication via KV-cache sharing — was always the most speculative. OBF [Zhang et al., 2026f] makes it substantially less so.
+
+Optimal Bandwidth Filtering demonstrates 89% communication cost reduction by compressing and relaying latent representations instead of text. Agents can share what they *computed* rather than what they *said*. If the membrane's wire format can carry latent relays alongside or instead of text CMBs, the token economics calculation changes dramatically.
+
+It is still a research path, not a foundation. Cross-model compatibility and closed-source access remain blockers. But 89% cost reduction is not a number you ignore.
 
 ---
 
@@ -282,7 +296,7 @@ We catalogue eighteen implementation paths, each evaluated on novelty, feasibili
 
 **Phase 1: Foundation, Discovery, Safety (Weeks 1-4).** Stand up the registry (Path 6, behavioural indexing per AgentSearchBench), implement the membrane as an MCP server (Path 2) using MMP's primitives (Path 8), wire OpenTelemetry from day one (Path 11) with failure-attribution hooks (Path 16), constrain the wire format to a token budget (Path 14), and ship the safety net first: basic immune detection (Path 17) and governance circuit breakers (Path 18).
 
-**Phase 2: Shared State, Gating, Attribution (Weeks 5-10).** Layer CRDTs over the event log (Paths 1 + 10) with full provenance. Consider ZenBrain's 7-layer architecture, Prism's evolutionary substrate, and ContextWeaver's dependency-structured memory as concrete Layer 2 candidates. Add gated permeability (Path 9) and reputation scoring (Path 6). Move to graph-structured memory with cognitive digestion (Path 7). Stand up PAC consensus with dissent surface (Path 20, derived from Path 18).
+**Phase 2: Shared State, Gating, Attribution (Weeks 5-10).** Layer CRDTs over the event log (Paths 1 + 10) with full provenance. Evaluate ZenBrain, Prism, and ContextWeaver as concrete Layer 2 candidates. Add gated permeability (Path 9) and reputation scoring (Path 6). Move to graph-structured memory with cognitive digestion (Path 7). Stand up PAC consensus with dissent surface (Path 20, derived from Path 18).
 
 **Phase 3: Coordination, Adaptive Defence, Validation (Weeks 11-16).** Add quorum sensing (Path 4) and multi-mode coordination (Path 21, derived from DM3Nav). Build cross-framework adapters (Path 12). Expand immune defence to full co-evolving response (Path 17). Run the Superminds-derived validation harness (Path 13) end-to-end.
 
@@ -322,13 +336,13 @@ These are concrete; the prototype either meets them or the thesis is wrong about
 - **Token cost regression.** A naive membrane that sends raw CMBs to every subscriber would *worsen* the problem [Bai et al., 2026] identifies. Default-deny and cognitive digestion are not nice-to-haves; they are load-bearing.
 - **Governance theatre.** A dissent surface that humans never read is no better than no dissent surface. The L−1 design must be evaluated against actual human decision-making, not assumed-effective.
 - **Adversarial co-evolution.** The membrane is a high-value target. Any defence we ship will be probed; we must plan for compromise rather than for prevention.
-- **Memory contamination and spore attacks.** [Zhang et al., 2026e] demonstrates that poisoned entries in shared state can self-replicate across agents via lineage chains, spreading like biological spores. MemEvoBench [Wang et al., 2026b] catalogues 36 memory safety risk types. The membrane must include quarantine mechanisms for contaminated entries, entry-level provenance validation, and memory-level immune responses beyond behavioural anomaly detection.
+- **Memory contamination and spore attacks.** Poisoned entries can self-replicate across agents via lineage chains [Zhang et al., 2026e]. MemEvoBench [Wang et al., 2026b] catalogues 36 risk types. The membrane needs quarantine, not just detection — a contaminated entry should be isolated before it spreads.
 
 ---
 
 ## 8. Conclusion
 
-Multi-agent AI does not lack agents. It lacks a *medium*. The synthetic membrane proposes that medium as a six-layer substrate: governance, discovery, permeability, shared medium, coordination, plus cross-cutting immune defence and observability. It is built from existing pieces (MCP, CRDTs, MMP, OpenTelemetry) and shaped by recent empirical findings about cost, attribution, consensus, and the limits of scale. The Superminds Test gave the field its bluntest result yet: two million agents do not amount to one mind. We submit that the missing ingredient is structured, gated, persistent communication. The membrane is one concrete proposal for delivering it. Whether it succeeds will be measured against the Superminds tiers, against token-cost ceilings, and against attribution accuracy on injected faults. Not against whether the metaphor pleases us.
+Multi-agent AI does not lack agents. It lacks a *medium*. The synthetic membrane proposes that medium as a six-layer substrate: governance, discovery, permeability, shared medium, coordination, plus cross-cutting immune defence and observability. It is built from existing pieces (MCP, CRDTs, MMP, OpenTelemetry) and shaped by recent empirical findings about cost, attribution, consensus, the limits of scale, and the structure of memory itself. The Superminds Test gave the field its bluntest result yet: two million agents do not amount to one mind. ZenBrain suggests the missing ingredient is structured, gated, persistent communication at a fraction of the cost we assumed. Spore Attack warns that shared state demands quarantine, not just detection. The membrane is one concrete proposal for delivering all of this. Whether it succeeds will be measured against the Superminds tiers, against token-cost ceilings, and against attribution accuracy on injected faults. Not against whether the metaphor pleases us.
 
 ---
 
