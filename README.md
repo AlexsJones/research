@@ -1,68 +1,55 @@
-# Synthetic Membrane
+# Research — Multi-Agent AI Coordination
 
-> A shared, permeable boundary for AI agents — enabling selective state sharing, emergent coordination, and collective intelligence.
+> Shared, permeable boundaries for AI agents — enabling selective state sharing, emergent coordination, and collective intelligence.
 
-## The Problem
+## Overview
 
-Two million agents on MoltBook produced **zero collective intelligence**. No emergent reasoning. No information synthesis. Scale alone is insufficient — *structure* is what produces collective intelligence.
+This repo documents research into **structured communication** as the prerequisite for collective intelligence in multi-agent systems. The core thesis: putting two million agents in the same room produces zero collective intelligence — not because the agents are weak, but because there is no *structure* between them.
 
-Current multi-agent frameworks (MCP, A2A, LangGraph, AutoGen) move *messages* between agents. What's missing is the **medium between agents** — a shared substrate where understanding accumulates, where agents can *sense* each other's state, and where coordination emerges without a central conductor.
+The **Synthetic Membrane** is our proposed solution: a shared, semi-permeable layer between agents, inspired by biological cell membranes, providing selective state sharing, event-sourced memory with CRDT semantics, and quorum-sensing swarm activation.
 
-## What It Is
+## Sympozium
 
-A **synthetic membrane** — inspired by biological cell membranes — is a shared, semi-permeable layer between agents providing:
+This research powers [**Sympozium**](https://github.com/sympozium-ai/sympozium) — a production-ready MCP server implementing the membrane architecture. Sympozium exposes 14 tools for agent registration, state exposure, semantic query, subscription, broadcast, and quorum-sensing swarm formation.
 
-- **Layer 1: Permeability** — Field-level selective sharing, default-deny access control, cognitive digestion (remix)
-- **Layer 2: Shared Medium** — Event-sourced memory with CRDT semantics, provenance, semantic query
-- **Layer 3: Coordination** — Quorum-sensing swarm activation, dynamic grouping, task claiming
-
-Plus **Layer 0** (discovery), **Layer -1** (governance), and an **immune layer** (adaptive defense).
+## Directory Structure
 
 ```
-   ┌──────────┐     ┌────────────────────────────────────────┐     ┌──────────┐
-   │  AGENT A │ ◀─▶ │   LAYER 3: COORDINATION (swarm)        │ ◀─▶ │  AGENT B │
-   │ ┌──────┐ │     │   quorum sensing · task claiming       │     │ ┌──────┐ │
-   │ │Local │ │     ├────────────────────────────────────────┤     │ │Local │ │
-   │ │ ctx  │ │     │   LAYER 2: SHARED MEDIUM (memory)      │     │ │ ctx  │ │
-   │ └──────┘ │     │   event log · CRDTs · semantic store   │     │ └──────┘ │
-   │   gate   │ ◀─▶ │   provenance · time-decay · replay     │ ◀─▶ │   gate   │
-   │ channels │     ├────────────────────────────────────────┤     │ channels │
-   │          │     │   LAYER 1: PERMEABILITY (protocol)     │     │          │
-   │  remix   │ ◀─▶ │   field-level selectivity · SVAF       │ ◀─▶ │  remix   │
-   │  digest  │     │   default-deny · cost-aware crossing   │     │  digest  │
-   └──────────┘     └─────────────────────────────────────────┘     └──────────┘
+research/
+├── papers/              # Position papers and research drafts
+│   ├── synthetic-membrane.md        # Original position paper
+│   └── 0001-synthetic-membrane-coordination-layer.md  # Draft paper
+├── articles/            # Blog posts and public-facing articles
+│   ├── blog-post.md                     # Accessible intro to synthetic membrane
+│   └── 0001-sticky-note-problem.md      # Draft: "The Sticky-Note Problem"
+├── corpus/              # Research corpus — deep-dive analyses
+│   └── agent-coordination/
+│       ├── corpus/           # Research articles (state of coordination, etc.)
+│       ├── analysis/         # Synthesis and meta-analysis
+│       ├── RESEARCH-BRIEF.md # Project brief
+│       └── CLAUDE.md         # Agent instructions
+├── wiki/              # Knowledge base — 80+ interlinked pages
+│   ├── concepts/        # Concept analyses
+│   ├── entities/        # Entity pages (protocols, frameworks)
+│   ├── raw/             # Raw research notes
+│   └── scripts/         # Wiki utilities
+├── mvp/               # Reference implementation — MCP server
+│   ├── src/             # Core package
+│   ├── tests/           # 41 passing tests
+│   └── demo/            # Self-contained demo with SVG output
+├── LICENSE
+└── README.md
 ```
 
-## Architecture
+## Getting Started
 
-Six layers from governance through coordination:
+### Read the Papers
 
-| Layer | Name | Purpose |
-|-------|------|---------|
-| **-1** | Governance | Circuit breakers, human override, value-conflict detection |
-| **0** | Discovery | Behavioral indexing, identity verification, reputation |
-| **1** | Permeability | Field-level selectivity, default-deny, cognitive digestion |
-| **2** | Shared Medium | Event log, CRDTs, semantic query, provenance |
-| **3** | Coordination | Quorum sensing, task claiming, swarm formation |
-| **∞** | Immune | Anomaly detection, threat gossip, adaptive defense |
+- **[Position Paper](papers/synthetic-membrane.md)** — Full thesis: structured communication as prerequisite for collective intelligence, six-layer architecture, implementation paths, and roadmap.
+- **[Draft Paper](papers/0001-synthetic-membrane-coordination-layer.md)** — Extended draft on the coordination layer.
+- **[Blog Post](articles/blog-post.md)** — Accessible introduction for the broader AI community.
 
-## MVP Reference Implementation
-
-A working MCP server exposing 14 tools:
-
-| Tool | Description |
-|------|-------------|
-| `register_agent` | Register with name and capabilities |
-| `expose` | Share state with permeability tier |
-| `query` | Query shared state (glob patterns, permeability-checked) |
-| `subscribe` | Subscribe to state change patterns |
-| `broadcast` | Broadcast to all registered agents |
-| `swarm_create` | Create quorum-sensing swarm |
-| `swarm_join` | Join swarm (capability-checked) |
-| `set_trust` | Set trust score between agents |
-| `stats` | Store statistics |
-
-### Quick Start
+### Run the MVP
 
 ```bash
 cd mvp
@@ -73,7 +60,6 @@ membrane-server  # Runs as MCP server over stdio
 ### Connect from an MCP Client
 
 ```python
-# The membrane is an MCP server — any MCP client connects:
 {
     "mcpServers": {
         "membrane": {
@@ -93,60 +79,9 @@ PYTHONPATH=src pytest tests/ -v
 # 41/41 passing — coordination, swarm lifecycle, event replay, token budget
 ```
 
-### Run the Demo
+### Explore the Wiki
 
-A self-contained demo lives in [`mvp/demo/`](mvp/demo/). Five agents
-(Researcher, Writer, Editor, Reviewer, Orchestrator) collaborate on a
-research brief through the membrane, exercising every public capability
-of the MVP — registration, three permeability tiers, trust, queries,
-subscriptions, broadcasts, and quorum-sensing swarms.
-
-```bash
-cd mvp
-pip install -r demo/requirements.txt
-python -m demo
-```
-
-The demo prints a richly-formatted terminal trace and emits five
-dark-themed SVGs into [`mvp/demo/output/`](mvp/demo/output/):
-
-| File | What it shows |
-|------|---------------|
-| [`architecture.svg`](mvp/demo/output/architecture.svg)     | Six-layer membrane between two agents, with arrows traversing each layer |
-| [`state_graph.svg`](mvp/demo/output/state_graph.svg)       | Bipartite agents ↔ exposed entries graph, edges colored by permeability tier |
-| [`swarm_timeline.svg`](mvp/demo/output/swarm_timeline.svg) | Quorum-sensing swarm lifecycle plotted against the event log sequence |
-| [`benchmark.svg`](mvp/demo/output/benchmark.svg)           | Baseline (point-to-point) vs. membrane on three metrics — small multiples |
-| [`scaling.svg`](mvp/demo/output/scaling.svg)               | Token cost vs. number of agents — baseline grows O(N²·F), membrane O(N·F) |
-
-#### Headline benchmark (3 agents, 5 facts each)
-
-|                  | baseline | membrane | reduction |
-|------------------|---------:|---------:|----------:|
-| messages         |       60 |       18 |   −70.0%  |
-| tokens           |    7,440 |    4,320 |   −41.9%  |
-| consensus steps  |        6 |        2 |   −66.7%  |
-
-The gap widens with scale: at 20 agents the token reduction reaches
-**−72.2%**.
-
-## Position Paper
-
-A full position paper is available in [paper/paper.md](paper/paper.md) covering:
-
-- The thesis: structured communication as prerequisite for collective intelligence
-- Six-layer architecture with ASCII diagram
-- Ten empirical findings from recent research (Superminds Test, MMP, token economics, world models)
-- Eighteen ranked implementation paths
-- Sixteen-week phased roadmap
-- Falsification criteria
-
-## Blog Post
-
-An accessible version for the broader AI community: [axjns.dev/research](https://axjns.dev/research) | [paper/blog-post.md](paper/blog-post.md)
-
-## Research Wiki
-
-The [wiki/](wiki/) directory contains 80+ interlinked markdown pages — entity pages, concept analyses, prototype code, and raw research articles. Open the wiki directory in [Obsidian](https://obsidian.md/) for the full knowledge graph experience.
+The [wiki/](wiki/) directory contains 80+ interlinked markdown pages — entity pages, concept analyses, prototype code, and raw research. Open the wiki directory in [Obsidian](https://obsidian.md/) for the full knowledge graph experience.
 
 ## Key References
 
@@ -159,7 +94,3 @@ The [wiki/](wiki/) directory contains 80+ interlinked markdown pages — entity 
 ## License
 
 MIT
-
-## Contributors
-
-Want to help? The [best-paths-forwards wiki page](wiki/concepts/best-paths-forwards.md) lists 18 ranked implementation paths with feasibility/impact/novelty scores. Pick one and go.
