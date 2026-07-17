@@ -42,43 +42,9 @@ The difference is the membrane.
 
 Let me try to be concrete. The thing I've been calling a "synthetic membrane" is a shared, permeable substrate between agents, with three layers. None of these layers are individually new — that's actually the point. The interesting work is in the interface between them.
 
-```
-                         ┌─────────────────────────────────────────┐
-                         │       LAYER -1: GOVERNANCE              │
-                         │  circuit breakers · human override      │
-                         │  value-conflict detection · audit       │
-                         └─────────────────────────────────────────┘
-                                            ▲
-                                            │
-                         ┌─────────────────────────────────────────┐
-                         │       LAYER  0: DISCOVERY                │
-                         │  behavioral indexing · identity verify  │
-                         │  capability matching · reputation        │
-                         └─────────────────────────────────────────┘
-                                            ▲
-                                            │
-   ┌──────────┐     ┌────────────────────────────────────────┐     ┌──────────┐
-   │  AGENT A │ ◀─▶ │   LAYER 3: COORDINATION (swarm)        │ ◀─▶ │  AGENT B │
-   │ ┌──────┐ │     │   quorum sensing · task claiming       │     │ ┌──────┐ │
-   │ │Local │ │     │   dynamic grouping · conflict resolve  │     │ │Local │ │
-   │ │ ctx  │ │     ├────────────────────────────────────────┤     │ │ ctx  │ │
-   │ └──────┘ │     │   LAYER 2: SHARED MEDIUM (memory)      │     │ └──────┘ │
-   │   gate   │ ◀─▶ │   event log · CRDTs · semantic store   │ ◀─▶ │   gate   │
-   │ channels │     │   provenance · time-decay · replay     │     │ channels │
-   │          │     ├────────────────────────────────────────┤     │          │
-   │  remix   │ ◀─▶ │   LAYER 1: PERMEABILITY (protocol)     │ ◀─▶ │  remix   │
-   │  digest  │     │   field-level selectivity · SVAF       │     │  digest  │
-   └──────────┘     │   default-deny · cost-aware crossing   │     └──────────┘
-                    └────────────────────────────────────────┘
-                                            ▲
-                                            │
-                                  ┌─────────────────────┐
-                                  │  IMMUNE LAYER       │
-                                  │  anomaly detection  │
-                                  │  threat gossip      │
-                                  │  memory cells       │
-                                  └─────────────────────┘
-```
+![The Synthetic Membrane Architecture — Six Layers of Agent Coordination](/research/diagrams/six-layer-architecture.html)
+
+![Why Current Orchestration Fails — Membrane vs Centralized Control](/research/diagrams/orchestration-vs-membrane.html)
 
 **Layer 1, the permeability layer.** This is the protocol — the part that says what an agent exposes and what it's willing to receive. Every agent declares: *here are my capabilities, here are the slices of my state I'm willing to publish, here are the events I'm listening for.* The crucial design choice: **default-deny, field-level selectivity.** An agent can accept some fields from a peer's state and reject others. The membrane is permeable, but selectively. Just like ion channels.
 
